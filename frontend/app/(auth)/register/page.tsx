@@ -25,7 +25,7 @@ export default function RegisterPage(): React.ReactNode {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await api.post<AuthResponse>("/auth/register", {
+      const res = await api.post<AuthResponse>("/auth/register", {
         full_name: fullName,
         email,
         phone: phone || undefined,
@@ -33,7 +33,12 @@ export default function RegisterPage(): React.ReactNode {
         role,
       });
       toast.success("Account created. Welcome aboard!");
-      router.push("/dashboard");
+      const dest =
+        res.user.role === "super_admin" ? "/admin"
+        : res.user.role === "event_manager" ? "/manager"
+        : res.user.role === "runner" ? "/runner"
+        : "/account";
+      router.push(dest);
       router.refresh();
     } catch (err) {
       toast.error(err instanceof ApiError ? err.detail ?? err.message : "Sign-up failed");

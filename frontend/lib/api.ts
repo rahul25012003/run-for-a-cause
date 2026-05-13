@@ -1,9 +1,17 @@
 /**
  * Typed API client for the RunForACause backend.
  * All requests include credentials (cookies) by default for auth.
+ *
+ * In the browser we use a RELATIVE url (/api/v1) so every request goes
+ * through the Next.js rewrite proxy → the Set-Cookie response is stored on
+ * the frontend domain → SSR cookies().get('access_token') finds it.
+ *
+ * In Node (SSR / server actions) we hit the backend directly.
  */
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+const API_URL =
+  typeof window !== "undefined"
+    ? "/api/v1"
+    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1");
 
 export class ApiError extends Error {
   status: number;

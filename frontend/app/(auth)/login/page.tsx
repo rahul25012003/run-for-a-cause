@@ -41,7 +41,12 @@ export default function LoginPage(): React.ReactNode {
         password,
       });
       toast.success(`Welcome back, ${res.user.full_name.split(" ")[0]}`);
-      router.push("/dashboard");
+      const dest =
+        res.user.role === "super_admin" ? "/admin"
+        : res.user.role === "event_manager" ? "/manager"
+        : res.user.role === "runner" ? "/runner"
+        : "/account";
+      router.push(dest);
       router.refresh();
     } catch (err) {
       toast.error(
@@ -77,7 +82,12 @@ export default function LoginPage(): React.ReactNode {
         otp,
       });
       toast.success(`Welcome back, ${res.user.full_name.split(" ")[0]}`);
-      router.push("/dashboard");
+      const dest =
+        res.user.role === "super_admin" ? "/admin"
+        : res.user.role === "event_manager" ? "/manager"
+        : res.user.role === "runner" ? "/runner"
+        : "/account";
+      router.push(dest);
       router.refresh();
     } catch (err) {
       toast.error(
