@@ -46,7 +46,7 @@ PUBLIC_VISIBLE_STATUSES = (
 )
 
 
-@router.get("/", response_model=list[EventPublic])
+@router.get("", response_model=list[EventPublic])
 async def list_events(
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[User | None, Depends(get_current_user_optional)] = None,
@@ -178,7 +178,7 @@ async def get_event(
 
 
 @router.post(
-    "/",
+    "",
     response_model=EventDetail,
     status_code=status.HTTP_201_CREATED,
 )

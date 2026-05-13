@@ -18,7 +18,7 @@ from app.utils.slugs import make_slug
 router = APIRouter(prefix="/causes", tags=["causes"])
 
 
-@router.get("/", response_model=list[CausePublic])
+@router.get("", response_model=list[CausePublic])
 async def list_causes(
     db: Annotated[AsyncSession, Depends(get_db)],
     organisation_id: UUID | None = None,
@@ -44,7 +44,7 @@ async def get_cause(
 
 
 @router.post(
-    "/",
+    "",
     response_model=CausePublic,
     status_code=status.HTTP_201_CREATED,
 )

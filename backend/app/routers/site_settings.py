@@ -35,7 +35,7 @@ class SiteSettingUpdate(BaseModel):
     value: str = Field(max_length=10000)
 
 
-@router.get("/", response_model=dict[str, str])
+@router.get("", response_model=dict[str, str])
 async def get_public_settings(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> dict[str, str]:

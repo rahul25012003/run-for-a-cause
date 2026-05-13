@@ -20,7 +20,7 @@ router = APIRouter(prefix="/payouts", tags=["payouts"])
 
 
 @router.post(
-    "/",
+    "",
     response_model=PayoutPublic,
     status_code=status.HTTP_201_CREATED,
 )
@@ -74,7 +74,7 @@ async def initiate_payout(
     return PayoutPublic.model_validate(payout)
 
 
-@router.get("/", response_model=list[PayoutPublic])
+@router.get("", response_model=list[PayoutPublic])
 async def list_payouts(
     admin: Annotated[User, Depends(require_admin)],
     db: Annotated[AsyncSession, Depends(get_db)],

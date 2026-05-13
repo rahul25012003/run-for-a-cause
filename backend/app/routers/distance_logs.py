@@ -44,7 +44,7 @@ router = APIRouter(prefix="/distance-logs", tags=["distance-logs"])
 
 
 @router.post(
-    "/",
+    "",
     response_model=DistanceLogPublic,
     status_code=status.HTTP_201_CREATED,
 )

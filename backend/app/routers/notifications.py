@@ -28,7 +28,7 @@ class NotificationPublic(ORMBase):
     read_at: datetime | None
 
 
-@router.get("/", response_model=list[NotificationPublic])
+@router.get("", response_model=list[NotificationPublic])
 async def list_notifications(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],

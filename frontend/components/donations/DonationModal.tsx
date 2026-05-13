@@ -125,7 +125,7 @@ export function DonationModal({
       }
 
       const response = await api.post<DonationCreateResponse>(
-        "/donations/",
+        "/donations",
         payload,
       );
       const ok = await loadRazorpay();

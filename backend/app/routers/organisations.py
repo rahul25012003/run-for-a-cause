@@ -23,7 +23,7 @@ from app.utils.slugs import make_slug
 router = APIRouter(prefix="/organisations", tags=["organisations"])
 
 
-@router.get("/", response_model=list[OrganisationPublic])
+@router.get("", response_model=list[OrganisationPublic])
 async def list_organisations(
     db: Annotated[AsyncSession, Depends(get_db)],
     verified_only: bool = True,
@@ -38,7 +38,7 @@ async def list_organisations(
 
 
 @router.post(
-    "/",
+    "",
     response_model=OrganisationDetail,
     status_code=status.HTTP_201_CREATED,
 )

@@ -25,7 +25,7 @@ router = APIRouter(prefix="/donations", tags=["donations"])
 
 
 @router.post(
-    "/",
+    "",
     response_model=DonationCreateResponse,
     status_code=status.HTTP_201_CREATED,
 )

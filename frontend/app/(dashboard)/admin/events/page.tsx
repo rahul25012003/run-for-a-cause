@@ -46,7 +46,7 @@ export default function AdminEventsPage(): React.ReactNode {
   const load = async (): Promise<void> => {
     setLoading(true);
     try {
-      const data = await api.get<EventPublic[]>("/events/?all=true&limit=200");
+      const data = await api.get<EventPublic[]>("/events?all=true&limit=200");
       setEvents(data);
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Load failed");
