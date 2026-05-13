@@ -31,19 +31,36 @@ def _to_paise(amount: Decimal) -> int:
     return int((amount * Decimal("100")).quantize(Decimal("1")))
 
 
+def _mock_order(donation_id: UUID, paise: int) -> dict[str, Any]:
+    return {
+        "id": f"order_mock_{donation_id.hex[:12]}",
+        "amount": paise,
+        "currency": "INR",
+        "receipt": str(donation_id),
+        "status": "created",
+        "mock": True,
+    }
+
+
 def create_razorpay_order(donation_id: UUID, amount: Decimal) -> dict[str, Any]:
-    """Create a Razorpay order. Falls back to a mock order if SDK unavailable."""
+    """Create a Razorpay order.
+
+    Falls back to a deterministic mock order when:
+    - The Razorpay SDK is not installed
+    - The configured key is a placeholder (contains 'dummy')
+    - The live API call fails (e.g. invalid test key in staging)
+    This keeps the donation flow functional in demo/dev environments.
+    """
     paise = _to_paise(amount)
     if _client is None:
         logger.warning("razorpay_client_unavailable_using_mock")
-        return {
-            "id": f"order_mock_{donation_id.hex[:12]}",
-            "amount": paise,
-            "currency": "INR",
-            "receipt": str(donation_id),
-            "status": "created",
-            "mock": True,
-        }
+        return _mock_order(donation_id, paise)
+
+    # Placeholder keys (not real Razorpay credentials) → skip the API call.
+    if "dummy" in settings.RAZORPAY_KEY_ID or "dummy" in settings.RAZORPAY_KEY_SECRET:
+        logger.warning("razorpay_dummy_keys_using_mock")
+        return _mock_order(donation_id, paise)
+
     try:
         order = _client.order.create(
             data={
