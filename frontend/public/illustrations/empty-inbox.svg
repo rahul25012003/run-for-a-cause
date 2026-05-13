@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" aria-hidden="true">
+  <rect width="240" height="180" fill="#FBF6EE"/>
+  <!-- Soft halo -->
+  <ellipse cx="120" cy="98" rx="78" ry="38" fill="#FFE4CB" opacity="0.6"/>
+  <!-- Inbox tray (open envelope) -->
+  <path d="M70 80 L120 50 L170 80 L170 130 L70 130 Z" fill="#FBF6EE" stroke="#1A1612" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Flap -->
+  <path d="M70 80 L120 110 L170 80" stroke="#1A1612" stroke-width="2" stroke-linejoin="round" fill="none"/>
+  <!-- Bell pop, brand orange, peeking from envelope -->
+  <g transform="translate(102 70)">
+    <path d="M18 6 C18 6, 8 8, 8 22 L8 30 L28 30 L28 22 C28 8, 18 6, 18 6 Z" fill="#ED6C0F" stroke="#1A1612" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="18" cy="34" r="2.5" fill="#1A1612"/>
+    <!-- bell vibration arcs -->
+    <path d="M3 14 Q1 18, 3 22" stroke="#ED6C0F" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M33 14 Q35 18, 33 22" stroke="#ED6C0F" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <!-- Quiet sparkles -->
+  <g fill="#C9A04D">
+    <circle cx="56" cy="64" r="2"/>
+    <circle cx="190" cy="62" r="1.5"/>
+    <circle cx="58" cy="120" r="1.5"/>
+  </g>
+</svg>

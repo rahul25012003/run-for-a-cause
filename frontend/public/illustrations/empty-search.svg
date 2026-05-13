@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" aria-hidden="true">
+  <rect width="240" height="180" fill="#FBF6EE"/>
+  <!-- Soft halo -->
+  <circle cx="110" cy="86" r="48" fill="#FFE4CB" opacity="0.55"/>
+  <!-- Magnifying glass — large lens, brand orange ring -->
+  <circle cx="110" cy="86" r="32" fill="none" stroke="#ED6C0F" stroke-width="6"/>
+  <!-- Lens highlight -->
+  <path d="M88 70 Q92 64, 100 64" stroke="#FBF6EE" stroke-width="3" stroke-linecap="round"/>
+  <!-- Handle -->
+  <path d="M132 108 L168 144" stroke="#1A1612" stroke-width="6" stroke-linecap="round"/>
+  <!-- Search lines (no results) -->
+  <g stroke="#1A1612" stroke-width="1.5" stroke-linecap="round" opacity="0.3">
+    <path d="M93 80 L127 80"/>
+    <path d="M93 90 L120 90"/>
+  </g>
+  <!-- Question dot — wandering -->
+  <circle cx="110" cy="100" r="3" fill="#C9A04D"/>
+  <!-- Floating cause emojis (cause-coloured circles) -->
+  <circle cx="50" cy="50" r="4" fill="#ED6C0F" opacity="0.6"/>
+  <circle cx="200" cy="60" r="3" fill="#2D6A4F" opacity="0.6"/>
+  <circle cx="180" cy="130" r="3" fill="#C9A04D" opacity="0.6"/>
+</svg>

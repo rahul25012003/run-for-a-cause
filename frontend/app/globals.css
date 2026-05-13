@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --canvas: #faf7f2;
+    --ink: #1a1612;
+    --primary: #ed6c0f;
+    --secondary: #2d6a4f;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv05", "cv11";
+  }
+
+  body {
+    @apply bg-canvas text-ink-900 font-sans;
+  }
+
+  ::selection {
+    background: rgba(237, 108, 15, 0.18);
+    color: var(--ink);
+  }
+
+  h1, h2, h3, h4, h5 {
+    @apply font-display tracking-tight;
+    font-feature-settings: "ss01";
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-primary-500 text-white px-6 py-3 hover:bg-primary-600 hover:shadow-glow shadow-soft;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-ink-900 border border-ink-100 px-6 py-3 hover:border-ink-300 hover:bg-canvas-subtle shadow-soft;
+  }
+  .btn-dark {
+    @apply btn bg-ink-900 text-white px-6 py-3 hover:bg-ink-800 shadow-soft;
+  }
+  .btn-ghost {
+    @apply btn text-ink-700 px-4 py-2 hover:bg-ink-50 hover:text-ink-900;
+  }
+  .btn-link {
+    @apply inline-flex items-center gap-1 text-primary-600 font-medium hover:text-primary-700 hover:underline underline-offset-4;
+  }
+  .btn-sm {
+    @apply text-sm px-4 py-2;
+  }
+
+  .input {
+    @apply w-full bg-white border border-ink-100 rounded-xl px-4 py-3 text-ink-900 placeholder:text-ink-300 outline-none transition-all duration-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10;
+  }
+  .input-lg {
+    @apply input text-lg py-4;
+  }
+  .label {
+    @apply block text-xs font-semibold tracking-wider uppercase text-ink-500 mb-2;
+  }
+
+  .card {
+    @apply rounded-2xl bg-white shadow-card border border-ink-100/60;
+  }
+  .card-hover {
+    @apply card transition-all duration-300 hover:shadow-lift hover:-translate-y-0.5;
+  }
+  .card-glass {
+    @apply rounded-2xl bg-white/70 backdrop-blur-xl border border-white/50 shadow-card;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-tight;
+  }
+
+  .container-page {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .container-prose {
+    @apply max-w-2xl mx-auto px-4 sm:px-6;
+  }
+  .section {
+    @apply py-20 md:py-32;
+  }
+  .section-tight {
+    @apply py-14 md:py-20;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-bold tracking-[0.18em] uppercase text-primary-600;
+  }
+  .body-lg {
+    @apply text-lg md:text-xl text-ink-700 leading-relaxed;
+  }
+  .quote-mark {
+    @apply font-display text-7xl text-primary-200 leading-none;
+  }
+  .divider-dotted {
+    @apply h-px bg-[linear-gradient(to_right,theme(colors.ink.200)_50%,transparent_50%)] bg-[length:8px_1px] bg-repeat-x;
+  }
+  .skeleton {
+    @apply rounded-md bg-gradient-to-r from-ink-100 via-ink-50 to-ink-100 bg-[length:200%_100%] animate-shimmer;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(26, 22, 18, 0.18);
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .clip-parallelogram {
+    clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    -webkit-clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  }
+  .clip-parallelogram-sm {
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    -webkit-clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  }
+
+  .text-outline {
+    -webkit-text-stroke: 1.5px currentColor;
+    color: transparent;
+  }
+  .text-outline-thick {
+    -webkit-text-stroke: 2px currentColor;
+    color: transparent;
+  }
+}
+
+/* Hero atmospheric particle drift — used by HeroSection's mote layer.
+   Slow, asymmetric drift so it feels organic, not metronomic. */
+@keyframes heroDrift {
+  0%   { transform: translate3d(0, 0, 0)         scale(1);   opacity: 0.35; }
+  35%  { transform: translate3d(-14px, 8px, 0)   scale(1.04); opacity: 0.5;  }
+  70%  { transform: translate3d(10px, -6px, 0)   scale(1.02); opacity: 0.42; }
+  100% { transform: translate3d(-4px, 4px, 0)    scale(1);   opacity: 0.35; }
+}

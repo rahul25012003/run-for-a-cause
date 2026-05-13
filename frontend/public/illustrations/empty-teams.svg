@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" aria-hidden="true">
+  <rect width="240" height="180" fill="#FBF6EE"/>
+  <!-- Soft group halo -->
+  <ellipse cx="120" cy="100" rx="80" ry="40" fill="#FFE4CB" opacity="0.55"/>
+  <!-- Three figures in a row, holding hands (line connecting their hands) -->
+  <g stroke="#1A1612" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Figure 1 -->
+    <circle cx="70" cy="68" r="9" fill="#ED6C0F"/>
+    <path d="M70 78 L70 110"/>
+    <path d="M70 92 L52 102"/>
+    <path d="M70 92 L88 92"/>
+    <path d="M70 110 L62 134"/>
+    <path d="M70 110 L78 134"/>
+    <!-- Figure 2 (centre, taller, captain) -->
+    <circle cx="120" cy="60" r="10" fill="#2D6A4F"/>
+    <path d="M120 70 L120 108"/>
+    <path d="M120 88 L100 92"/>
+    <path d="M120 88 L140 92"/>
+    <path d="M120 108 L110 134"/>
+    <path d="M120 108 L130 134"/>
+    <!-- captain star above head -->
+    <path d="M120 44 L122 50 L128 50 L123 54 L125 60 L120 56 L115 60 L117 54 L112 50 L118 50 Z" fill="#C9A04D" stroke="none"/>
+    <!-- Figure 3 -->
+    <circle cx="170" cy="68" r="9" fill="#C9A04D"/>
+    <path d="M170 78 L170 110"/>
+    <path d="M170 92 L152 92"/>
+    <path d="M170 92 L188 102"/>
+    <path d="M170 110 L162 134"/>
+    <path d="M170 110 L178 134"/>
+  </g>
+  <!-- Shadows -->
+  <ellipse cx="70" cy="138" rx="14" ry="2" fill="#1A1612" opacity="0.15"/>
+  <ellipse cx="120" cy="138" rx="16" ry="2" fill="#1A1612" opacity="0.15"/>
+  <ellipse cx="170" cy="138" rx="14" ry="2" fill="#1A1612" opacity="0.15"/>
+  <!-- Connecting hand-line (subtle baseline) -->
+  <path d="M52 102 L100 92" stroke="#ED6C0F" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
+  <path d="M140 92 L188 102" stroke="#ED6C0F" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
+</svg>

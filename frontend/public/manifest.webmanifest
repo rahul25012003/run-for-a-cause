@@ -1,0 +1,53 @@
+{
+  "name": "RunForACause",
+  "short_name": "RunForACause",
+  "description": "India's most transparent crowd-funding run platform. Run for a cause; donors sponsor every kilometre.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF6EE",
+  "theme_color": "#ED6C0F",
+  "lang": "en-IN",
+  "scope": "/",
+  "categories": ["fitness", "lifestyle", "social"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse events",
+      "short_name": "Events",
+      "url": "/events",
+      "description": "See live fundraising events"
+    },
+    {
+      "name": "My dashboard",
+      "short_name": "Dashboard",
+      "url": "/runner",
+      "description": "Open my runner dashboard"
+    }
+  ]
+}

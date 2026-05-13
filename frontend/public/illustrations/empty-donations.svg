@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" aria-hidden="true">
+  <rect width="240" height="180" fill="#FBF6EE"/>
+  <!-- Soft halo behind heart -->
+  <circle cx="120" cy="78" r="50" fill="#FFE4CB" opacity="0.65"/>
+  <!-- Heart, brand orange, line-art outline -->
+  <path d="M120 110 C100 96, 86 86, 86 70 C86 60, 94 54, 102 54 C110 54, 116 58, 120 64 C124 58, 130 54, 138 54 C146 54, 154 60, 154 70 C154 86, 140 96, 120 110 Z"
+        fill="#ED6C0F" stroke="#1A1612" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Inner heart highlight -->
+  <path d="M104 64 C100 64, 96 68, 96 72" stroke="#FBF6EE" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <!-- Coins falling — three rupee coins of decreasing size -->
+  <g stroke="#1A1612" stroke-width="1.5" fill="#C9A04D">
+    <circle cx="58" cy="135" r="10"/>
+    <text x="58" y="139" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="11" fill="#1A1612">₹</text>
+  </g>
+  <g stroke="#1A1612" stroke-width="1.5" fill="#C9A04D">
+    <circle cx="180" cy="142" r="8"/>
+    <text x="180" y="146" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="9" fill="#1A1612">₹</text>
+  </g>
+  <g stroke="#1A1612" stroke-width="1.5" fill="#C9A04D">
+    <circle cx="200" cy="120" r="6"/>
+    <text x="200" y="123" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="7" fill="#1A1612">₹</text>
+  </g>
+  <!-- Sparkles -->
+  <g fill="#ED6C0F">
+    <path d="M170 60 L172 65 L177 67 L172 69 L170 74 L168 69 L163 67 L168 65 Z"/>
+    <path d="M70 88 L71 91 L74 92 L71 93 L70 96 L69 93 L66 92 L69 91 Z"/>
+  </g>
+</svg>

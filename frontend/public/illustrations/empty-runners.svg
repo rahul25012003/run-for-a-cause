@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" aria-hidden="true">
+  <rect width="240" height="180" fill="#FBF6EE"/>
+  <!-- Sun -->
+  <circle cx="200" cy="48" r="18" fill="#ED6C0F" opacity="0.85"/>
+  <circle cx="200" cy="48" r="26" fill="#FFE4CB" opacity="0.5"/>
+  <!-- Horizon line -->
+  <path d="M0 135 L240 135" stroke="#1A1612" stroke-width="1" opacity="0.2"/>
+  <!-- Three runner silhouettes, varied heights, mid-stride -->
+  <g stroke="#1A1612" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Runner 1 (back) -->
+    <circle cx="80" cy="68" r="7" fill="#2D6A4F"/>
+    <path d="M80 76 L78 100"/>
+    <path d="M78 86 L70 92"/>
+    <path d="M78 86 L88 84"/>
+    <path d="M78 100 L72 122"/>
+    <path d="M78 100 L86 118"/>
+    <!-- Runner 2 (middle, taller) -->
+    <circle cx="120" cy="58" r="8" fill="#ED6C0F"/>
+    <path d="M120 67 L116 100"/>
+    <path d="M116 80 L106 92"/>
+    <path d="M116 80 L130 78"/>
+    <path d="M116 100 L108 124"/>
+    <path d="M116 100 L126 120"/>
+    <!-- Runner 3 (front) -->
+    <circle cx="158" cy="74" r="7" fill="#C9A04D"/>
+    <path d="M158 82 L156 102"/>
+    <path d="M156 90 L148 96"/>
+    <path d="M156 90 L166 88"/>
+    <path d="M156 102 L150 122"/>
+    <path d="M156 102 L162 120"/>
+  </g>
+  <!-- Shadows -->
+  <ellipse cx="80" cy="128" rx="14" ry="2" fill="#1A1612" opacity="0.15"/>
+  <ellipse cx="120" cy="128" rx="16" ry="2" fill="#1A1612" opacity="0.15"/>
+  <ellipse cx="158" cy="128" rx="14" ry="2" fill="#1A1612" opacity="0.15"/>
+  <!-- Distance dashes (path) -->
+  <path d="M20 152 L220 152" stroke="#ED6C0F" stroke-width="2" stroke-dasharray="6 8" opacity="0.4"/>
+</svg>

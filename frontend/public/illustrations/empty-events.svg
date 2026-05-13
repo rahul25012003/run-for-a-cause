@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" aria-hidden="true">
+  <!-- Cream wash background -->
+  <rect width="240" height="180" fill="#FBF6EE"/>
+  <!-- Soft orange orb -->
+  <circle cx="60" cy="55" r="42" fill="#FFE4CB" opacity="0.7"/>
+  <!-- Distant horizon line -->
+  <path d="M0 130 Q120 120 240 130" stroke="#1A1612" stroke-width="1" stroke-dasharray="2 4" opacity="0.25"/>
+  <!-- Finish-line ribbon (parallelogram) -->
+  <path d="M150 110 L210 100 L215 130 L155 140 Z" fill="#ED6C0F"/>
+  <path d="M150 110 L210 100 L215 130 L155 140 Z" stroke="#1A1612" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Checker squares on ribbon -->
+  <path d="M165 113 L175 111 L177 124 L167 126 Z" fill="#FBF6EE"/>
+  <path d="M188 109 L198 107 L200 120 L190 122 Z" fill="#FBF6EE"/>
+  <!-- Runner silhouette (editorial line work) -->
+  <g stroke="#1A1612" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- head -->
+    <circle cx="92" cy="68" r="8" fill="#1A1612"/>
+    <!-- body -->
+    <path d="M92 78 L88 100"/>
+    <!-- arms — one forward, one back -->
+    <path d="M88 88 L78 95"/>
+    <path d="M88 88 L102 82"/>
+    <!-- legs in stride -->
+    <path d="M88 100 L80 122"/>
+    <path d="M88 100 L100 118"/>
+  </g>
+  <!-- Ground shadow -->
+  <ellipse cx="92" cy="128" rx="18" ry="2.5" fill="#1A1612" opacity="0.15"/>
+  <!-- Distance breadcrumbs -->
+  <circle cx="40" cy="148" r="2" fill="#ED6C0F"/>
+  <circle cx="60" cy="146" r="2" fill="#ED6C0F" opacity="0.7"/>
+  <circle cx="80" cy="148" r="2" fill="#ED6C0F" opacity="0.45"/>
+  <circle cx="100" cy="150" r="2" fill="#ED6C0F" opacity="0.25"/>
+</svg>
