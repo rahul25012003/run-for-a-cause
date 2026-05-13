@@ -309,12 +309,28 @@ DEFAULTS: list[dict] = [
         "sort_order": 2,
     },
     {
+        "key": "footer.contact_phone",
+        "label": "Contact phone",
+        "group": "footer",
+        "type": SettingType.TEXT,
+        "value": "+91 80 4956 1234",
+        "sort_order": 3,
+    },
+    {
+        "key": "footer.contact_city",
+        "label": "Contact city / location",
+        "group": "footer",
+        "type": SettingType.TEXT,
+        "value": "Bengaluru, India",
+        "sort_order": 4,
+    },
+    {
         "key": "footer.newsletter_text",
         "label": "Newsletter blurb",
         "group": "footer",
         "type": SettingType.LONGTEXT,
         "value": "Quarterly impact reports — no fundraising spam.",
-        "sort_order": 3,
+        "sort_order": 5,
     },
     # ===== HOWITWORKS STEPS =====
     {
