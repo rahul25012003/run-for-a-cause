@@ -13,8 +13,12 @@ interface FileUploadDropzoneProps {
   label?: string;
 }
 
+// Use relative URL in browser so uploads go through the Next.js proxy →
+// the httpOnly cookie (set on the frontend domain) is forwarded to backend.
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+  typeof window !== "undefined"
+    ? "/api/v1"
+    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1");
 
 export function FileUploadDropzone({
   endpoint,

@@ -141,21 +141,21 @@ export default function ManagerEventDetail({
             <FileText className="w-3.5 h-3.5" /> Impact report
           </Link>
           <a
-            href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1"}/events/${eventId}/exports/donations.csv`}
+            href={`/api/v1/events/${eventId}/exports/donations.csv`}
             className="btn-secondary btn-sm"
             title="Download all donations as CSV"
           >
             <Download className="w-3.5 h-3.5" /> Donations CSV
           </a>
           <a
-            href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1"}/events/${eventId}/exports/runners.csv`}
+            href={`/api/v1/events/${eventId}/exports/runners.csv`}
             className="btn-secondary btn-sm"
             title="Download all runners as CSV"
           >
             <Download className="w-3.5 h-3.5" /> Runners CSV
           </a>
           <a
-            href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1"}/events/${eventId}/exports/analytics.pdf`}
+            href={`/api/v1/events/${eventId}/exports/analytics.pdf`}
             className="btn-primary btn-sm"
             title="One-page board report — totals, top runners, top donors"
           >

@@ -116,7 +116,7 @@ export default async function RunnerOverviewPage(): Promise<React.ReactNode> {
                   <ExternalLink className="w-3.5 h-3.5" /> Public page
                 </Link>
                 <a
-                  href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1"}/certificates/runner/${er.id}`}
+                  href={`/api/v1/certificates/runner/${er.id}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-secondary btn-sm flex-1 justify-center"

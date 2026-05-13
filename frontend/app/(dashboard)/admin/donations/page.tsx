@@ -32,7 +32,9 @@ interface Donation {
 }
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+  typeof window !== "undefined"
+    ? "/api/v1"
+    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1");
 
 export default function AdminDonationsPage(): React.ReactNode {
   const [donations, setDonations] = useState<Donation[]>([]);

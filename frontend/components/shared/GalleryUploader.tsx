@@ -12,7 +12,9 @@ interface GalleryUploaderProps {
 }
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+  typeof window !== "undefined"
+    ? "/api/v1"
+    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1");
 
 /**
  * Multi-image gallery uploader. Up to `max` photos. Click or drop to add,
