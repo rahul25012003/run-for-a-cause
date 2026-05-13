@@ -14,6 +14,8 @@ export default function RegisterPage(): React.ReactNode {
   const params = useSearchParams();
   const initialRole = (params.get("role") as UserRole | null) ?? "runner";
 
+  const eventId = params.get("event") ?? null;
+
   const [role, setRole] = useState<UserRole>(initialRole);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -32,7 +34,17 @@ export default function RegisterPage(): React.ReactNode {
         password,
         role,
       });
-      toast.success("Account created. Welcome aboard!");
+      // Auto-join event if launched from an event page
+      if (res.user.role === "runner" && eventId) {
+        try {
+          await api.post(`/events/${eventId}/runners`, {});
+          toast.success("Account created and event application submitted!");
+        } catch {
+          toast.success("Account created. Welcome aboard!");
+        }
+      } else {
+        toast.success("Account created. Welcome aboard!");
+      }
       const dest =
         res.user.role === "super_admin" ? "/admin"
         : res.user.role === "event_manager" ? "/manager"

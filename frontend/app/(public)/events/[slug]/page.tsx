@@ -17,6 +17,7 @@ import { SponsorStrip } from "@/components/events/SponsorStrip";
 import { TeamLeaderboard } from "@/components/events/TeamLeaderboard";
 import { DonorWall } from "@/components/events/DonorWall";
 import { ShareEventCard } from "@/components/events/ShareEventCard";
+import { JoinEventButton } from "@/components/events/JoinEventButton";
 import {
   formatCompactInr,
   formatCurrency,
@@ -231,12 +232,11 @@ export default async function EventDetailPage({
                 >
                   <HandHeart className="w-3.5 h-3.5" /> Volunteer
                 </Link>
-                <Link
-                  href={`/register?role=runner&event=${event.id}`}
-                  className="btn-primary btn-sm inline-flex items-center gap-1.5"
-                >
-                  <Heart className="w-3.5 h-3.5" /> Join as runner
-                </Link>
+                <JoinEventButton
+                  eventId={event.id}
+                  eventTitle={event.title}
+                  goalKm={Number(event.distance_goal_km) || 100}
+                />
               </div>
             </div>
             {runners.length === 0 ? (
