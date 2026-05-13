@@ -51,7 +51,7 @@ export default function ManagerCausesPage(): React.ReactNode {
   const refresh = async () => {
     setLoading(true);
     try {
-      const list = await api.get<Cause[]>("/causes/");
+      const list = await api.get<Cause[]>("/causes");
       setCauses(list);
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Couldn't load causes");
@@ -123,7 +123,7 @@ export default function ManagerCausesPage(): React.ReactNode {
     e.preventDefault();
     setCreating(true);
     try {
-      await api.post("/causes/", { title: newTitle, summary: newSummary });
+      await api.post("/causes", { title: newTitle, summary: newSummary });
       toast.success("Cause created — add awareness facts to it now.");
       setNewTitle("");
       setNewSummary("");

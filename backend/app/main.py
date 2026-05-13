@@ -138,6 +138,11 @@ app = FastAPI(
     redoc_url=None if _is_prod else "/redoc",
     openapi_url="/openapi.json",
     lifespan=lifespan,
+    # Render's Cloudflare proxy strips trailing slashes (308 redirect).
+    # If FastAPI then re-adds one (307 to backend URL), the browser follows
+    # it cross-origin — without the auth cookie — causing 401 errors.
+    # redirect_slashes=False accepts both /path and /path/ without redirect.
+    redirect_slashes=False,
 )
 
 app.add_middleware(

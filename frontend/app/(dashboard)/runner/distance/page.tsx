@@ -51,7 +51,7 @@ export default function LogDistancePage(): React.ReactNode {
     }
     setSubmitting(true);
     try {
-      await api.post("/distance-logs/", {
+      await api.post("/distance-logs", {
         event_runner_id: eventRunnerId,
         distance_km: Number(distance),
         activity_date: date,

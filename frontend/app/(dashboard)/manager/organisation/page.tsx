@@ -127,7 +127,7 @@ export default function ManagerOrganisationPage(): React.ReactNode {
     }
     setCreating(true);
     try {
-      const o = await api.post<OrganisationDetail>("/organisations/", {
+      const o = await api.post<OrganisationDetail>("/organisations", {
         name: edit.name.trim(),
         description: edit.description || undefined,
         website: edit.website || undefined,

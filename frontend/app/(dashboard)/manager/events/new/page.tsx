@@ -11,6 +11,7 @@ interface OrgOption {
   id: string;
   name: string;
   slug: string;
+  kyc_status?: string;
 }
 
 interface FieldErrors {
@@ -68,12 +69,12 @@ export default function NewEventPage(): React.ReactNode {
           if (list.length > 0) setOrgId(list[0].id);
           setOrgsLoading(false);
         } else {
-          // Fetch manager's own org to show read-only in the form
+          // Fetch manager's own org — need kyc_status to gate event creation
           try {
             const org = await api.get<OrgOption>("/organisations/me");
             setMyOrg(org);
           } catch {
-            /* org may not exist yet */
+            /* org may not exist yet — orgChecked=true shows the warning */
           } finally {
             setOrgChecked(true);
           }
@@ -110,13 +111,17 @@ export default function NewEventPage(): React.ReactNode {
       toast.error("Select an organiser.");
       return;
     }
+    if (kycNotVerified) {
+      toast.error("Complete KYC verification before creating events.");
+      return;
+    }
     if (!validate()) {
       toast.error("Fix the highlighted fields before saving.");
       return;
     }
     setSubmitting(true);
     try {
-      await api.post("/events/", {
+      await api.post("/events", {
         ...(isAdmin && orgId ? { organisation_id: orgId } : {}),
         title: title.trim(),
         description: description.trim(),
@@ -144,6 +149,9 @@ export default function NewEventPage(): React.ReactNode {
 
   const noVerifiedOrgs = isAdmin && !orgsLoading && orgs.length === 0;
   const managerHasNoOrg = !isAdmin && orgChecked && !myOrg;
+  const kycStatus = myOrg?.kyc_status;
+  const kycNotVerified =
+    !isAdmin && orgChecked && myOrg && kycStatus !== "verified";
 
   return (
     <div className="p-6 md:p-10 max-w-3xl">
@@ -175,6 +183,31 @@ export default function NewEventPage(): React.ReactNode {
               className="btn-primary btn-sm inline-flex mt-3"
             >
               Set up organisation →
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* Manager: KYC not verified — block event creation */}
+      {kycNotVerified && (
+        <div className="mb-6 card p-5 border border-amber-300 bg-amber-50 flex items-start gap-4">
+          <Info className="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-ink-900">
+              KYC verification required before creating events
+            </p>
+            <p className="text-sm text-ink-600 mt-1">
+              {kycStatus === "submitted" || kycStatus === "under_review"
+                ? "Your KYC details are under review by our team. You'll be notified once approved — usually within 1 business day. You can save a draft event below but won't be able to submit it for approval until KYC is cleared."
+                : kycStatus === "rejected"
+                  ? "Your KYC was rejected. Fix the issues and resubmit from your organisation page before creating events."
+                  : "Fill in your KYC & banking details and submit them for super-admin review before your events can go live."}
+            </p>
+            <a
+              href="/manager/organisation"
+              className="btn-primary btn-sm inline-flex mt-3"
+            >
+              {kycStatus === "rejected" ? "Fix & resubmit KYC →" : "Complete KYC →"}
             </a>
           </div>
         </div>
@@ -431,7 +464,7 @@ export default function NewEventPage(): React.ReactNode {
           <button
             type="submit"
             className="btn-primary inline-flex items-center gap-2"
-            disabled={submitting || noVerifiedOrgs || managerHasNoOrg}
+            disabled={submitting || noVerifiedOrgs || managerHasNoOrg || !!kycNotVerified}
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             Save as draft
