@@ -1,21 +1,9 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
-import { MapPin } from "lucide-react";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHero } from "@/components/shared/PageHero";
+import { MapClientWrapper } from "@/components/map/MapClientWrapper";
 import { fetchPublicSettings } from "@/lib/hooks/useSiteSettings";
 import type { EventMapPin } from "@/types";
-
-// Leaflet touches `window` at import time, so the map must be client-only.
-const IndiaMap = dynamic(
-  () => import("@/components/map/IndiaMap").then((m) => m.IndiaMap),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[500px] md:h-[600px] rounded-2xl bg-cream-100 animate-pulse border border-ink-100" />
-    ),
-  },
-);
 
 export const metadata: Metadata = {
   title: "Find events near you",
@@ -64,7 +52,7 @@ export default async function MapPage(): Promise<React.ReactNode> {
             <p className="eyebrow mb-4 text-ink-500">
               {pins.length} event{pins.length === 1 ? "" : "s"} mapped
             </p>
-            <IndiaMap pins={pins} />
+            <MapClientWrapper pins={pins} />
           </>
         )}
       </section>
