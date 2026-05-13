@@ -546,14 +546,42 @@ DEFAULTS: list[dict] = [
 ]
 
 
+_LOCAL_UPLOAD_PREFIX = "/uploads/"
+
+
+def _is_broken_local_upload(value: str) -> bool:
+    """Return True when a setting value points at the local uploads dir or a
+    deploy-wiped Render uploads path.  These URLs become 404 on every fresh
+    deploy because Render free-tier storage is ephemeral."""
+    if not value:
+        return False
+    if _LOCAL_UPLOAD_PREFIX in value:
+        return True
+    # Render backend upload path e.g. https://run-for-a-cause-backend.onrender.com/uploads/...
+    if "onrender.com/uploads/" in value:
+        return True
+    return False
+
+
 async def upsert_defaults(db: AsyncSession) -> int:
     inserted = 0
+    reset = 0
     for d in DEFAULTS:
         result = await db.execute(
             select(SiteSetting).where(SiteSetting.key == d["key"])
         )
         existing = result.scalar_one_or_none()
         if existing:
+            # Reset image/url settings that point at ephemeral upload storage
+            # back to the seeded default so they don't 404 after a redeploy.
+            default_val = d.get("value", "")
+            if (
+                d.get("type") in (SettingType.IMAGE, SettingType.URL)
+                and _is_broken_local_upload(existing.value)
+                and default_val
+            ):
+                existing.value = default_val
+                reset += 1
             continue
         db.add(
             SiteSetting(
@@ -575,7 +603,8 @@ async def upsert_defaults(db: AsyncSession) -> int:
 async def main() -> None:
     async with AsyncSessionLocal() as db:
         n = await upsert_defaults(db)
-        print(f"✅ Site settings: {n} new keys inserted ({len(DEFAULTS)} total).")
+        print(f"✅ Site settings: {n} new keys inserted ({len(DEFAULTS)} total)."
+              if n else f"✅ Site settings: up to date ({len(DEFAULTS)} total).")
 
 
 if __name__ == "__main__":
