@@ -11,10 +11,7 @@ interface GalleryUploaderProps {
   max?: number;
 }
 
-const API_URL =
-  typeof window !== "undefined"
-    ? "/api/v1"
-    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1");
+const UPLOAD_BASE = "/api/upload";
 
 /**
  * Multi-image gallery uploader. Up to `max` photos. Click or drop to add,
@@ -50,7 +47,7 @@ export function GalleryUploader({
         }
         const fd = new FormData();
         fd.append("file", file);
-        const res = await fetch(`${API_URL}/uploads/image`, {
+        const res = await fetch(`${UPLOAD_BASE}/image`, {
           method: "POST",
           body: fd,
           credentials: "include",

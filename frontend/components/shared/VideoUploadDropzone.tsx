@@ -14,10 +14,7 @@ interface VideoUploadDropzoneProps {
   maxMb?: number;
 }
 
-const API_URL =
-  typeof window !== "undefined"
-    ? "/api/v1"
-    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1");
+const UPLOAD_BASE = "/api/upload";
 
 export function VideoUploadDropzone({
   value,
@@ -45,7 +42,7 @@ export function VideoUploadDropzone({
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch(`${API_URL}/uploads/video`, {
+      const res = await fetch(`${UPLOAD_BASE}/video`, {
         method: "POST",
         body: fd,
         credentials: "include",

@@ -108,6 +108,8 @@ async def seed() -> None:
             kyc_verified_at=now,
             kyc_verified_by=admin.id,
         )
+        # Green Earth is intentionally left with PENDING KYC so the full
+        # submission → super-admin approval flow can be demonstrated in demo.
         org2 = Organisation(
             user_id=ngo2_user.id,
             name="Green Earth Trust",
@@ -115,17 +117,15 @@ async def seed() -> None:
             description="Reforestation and watershed projects in the Western Ghats.",
             logo_url=None,
             website="https://greenearth.example.in",
-            pan_number="AABCG5678D",
-            gstin="29AABCG5678D1Z2",
-            reg_80g_number="AABCG5678D/80G/2024",
-            is_80g_eligible=True,
-            bank_account_no="9876543210",
-            bank_ifsc="HDFC0009876",
-            bank_name="HDFC Bank",
-            bank_account_holder="Green Earth Trust",
-            kyc_status=KycStatus.VERIFIED,
-            kyc_verified_at=now,
-            kyc_verified_by=admin.id,
+            pan_number=None,
+            gstin=None,
+            reg_80g_number=None,
+            is_80g_eligible=False,
+            bank_account_no=None,
+            bank_ifsc=None,
+            bank_name=None,
+            bank_account_holder=None,
+            kyc_status=KycStatus.PENDING,
         )
         db.add_all([org1, org2])
         await db.flush()

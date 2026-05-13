@@ -392,3 +392,100 @@ async def reject_kyc(
     await db.commit()
     await db.refresh(org)
     return OrganisationDetail.model_validate(org)
+
+
+@router.post("/{org_id}/reset-kyc", response_model=OrganisationDetail)
+async def reset_kyc(
+    org_id: UUID,
+    request: Request,
+    admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> OrganisationDetail:
+    """Super-admin: reset KYC to pending so the manager can re-edit locked fields."""
+    result = await db.execute(select(Organisation).where(Organisation.id == org_id))
+    org = result.scalar_one_or_none()
+    if not org:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    org.kyc_status = KycStatus.PENDING
+    org.kyc_verified_at = None
+    org.kyc_verified_by = None
+    org.kyc_rejection_reason = None
+    await log_action(
+        db,
+        entity_type="organisation",
+        entity_id=org.id,
+        action="organisation.kyc_reset",
+        actor=admin,
+        request=request,
+    )
+    await db.commit()
+    await db.refresh(org)
+    return OrganisationDetail.model_validate(org)
+
+
+@router.put("/{org_id}", response_model=OrganisationDetail)
+async def admin_update_org(
+    org_id: UUID,
+    payload: OrganisationUpdate,
+    request: Request,
+    admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> OrganisationDetail:
+    """Super-admin: edit any organisation field regardless of KYC status."""
+    result = await db.execute(select(Organisation).where(Organisation.id == org_id))
+    org = result.scalar_one_or_none()
+    if not org:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(org, field, value)
+    await log_action(
+        db,
+        entity_type="organisation",
+        entity_id=org.id,
+        action="organisation.admin_updated",
+        actor=admin,
+        request=request,
+    )
+    await db.commit()
+    await db.refresh(org)
+    return OrganisationDetail.model_validate(org)
+
+
+@router.delete("/{org_id}", status_code=204)
+async def delete_org(
+    org_id: UUID,
+    request: Request,
+    admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> None:
+    """Super-admin: permanently delete an organisation and all its data."""
+    result = await db.execute(select(Organisation).where(Organisation.id == org_id))
+    org = result.scalar_one_or_none()
+    if not org:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    await log_action(
+        db,
+        entity_type="organisation",
+        entity_id=org.id,
+        action="organisation.deleted",
+        actor=admin,
+        request=request,
+        metadata={"name": org.name},
+    )
+    await db.delete(org)
+    await db.commit()
+
+
+@router.get("/admin/all", response_model=list[OrganisationDetail])
+async def list_all_orgs(
+    admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    limit: int = 100,
+) -> list[OrganisationDetail]:
+    """Super-admin: list every organisation regardless of KYC status."""
+    result = await db.execute(
+        select(Organisation)
+        .order_by(Organisation.created_at.desc())
+        .limit(limit)
+    )
+    return [OrganisationDetail.model_validate(o) for o in result.scalars().all()]
