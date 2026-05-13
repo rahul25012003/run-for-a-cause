@@ -128,6 +128,29 @@ export function DonationModal({
         "/donations",
         payload,
       );
+
+      const isMockOrder = response.razorpay_order.id.startsWith("order_mock_");
+
+      if (isMockOrder) {
+        // Demo / staging mode: dummy Razorpay keys are configured.
+        // Skip the real Razorpay checkout and verify directly with mock creds.
+        await api.post("/payments/verify", {
+          donation_id: response.donation.id,
+          razorpay_order_id: response.razorpay_order.id,
+          razorpay_payment_id: `pay_mock_${response.donation.id.replace(/-/g, "").slice(0, 12)}`,
+          razorpay_signature: "mock_signature",
+        });
+        setStep("success");
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ["#ED6C0F", "#2D6A4F", "#BF9000"],
+        });
+        setSubmitting(false);
+        return;
+      }
+
       const ok = await loadRazorpay();
       if (!ok || !window.Razorpay) {
         toast.error("Could not load payment SDK.");
