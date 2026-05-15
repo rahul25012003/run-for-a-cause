@@ -75,8 +75,9 @@ export async function generateMetadata({
   params: Promise<{ username: string }>;
 }): Promise<Metadata> {
   const { username } = await params;
-  const runner = await fetchRunner(username);
-  if (!runner) return { title: "Runner not found" };
+  const runnerMeta = await fetchRunner(username);
+  if (!runnerMeta || runnerMeta === "unavailable") return { title: "Runner profile" };
+  const runner = runnerMeta;
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://runforacause.in";
   const name = runner.public_slug

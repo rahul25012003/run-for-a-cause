@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { EventCard } from "@/components/events/EventCard";
-import { EmptyState } from "@/components/shared/EmptyState";
 import { Reveal } from "@/components/shared/Reveal";
 import { Tilt3D } from "@/components/shared/Tilt3D";
 import type { EventPublic } from "@/types";
