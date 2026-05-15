@@ -3,18 +3,17 @@ import { ArrowRight } from "lucide-react";
 import { EventCard } from "@/components/events/EventCard";
 import { Reveal } from "@/components/shared/Reveal";
 import { Tilt3D } from "@/components/shared/Tilt3D";
+import { timedFetch } from "@/lib/hooks/useSiteSettings";
 import type { EventPublic } from "@/types";
 
 async function fetchFeatured(): Promise<EventPublic[]> {
   const apiUrl =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+  const res = await timedFetch(`${apiUrl}/events?limit=6`, {
+    next: { revalidate: 60 },
+  });
+  if (!res || !res.ok) return [];
   try {
-    // Use AbortSignal.timeout so a sleeping backend doesn't stall the build
-    const res = await fetch(`${apiUrl}/events?limit=6`, {
-      next: { revalidate: 60 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return [];
     return (await res.json()) as EventPublic[];
   } catch {
     return [];

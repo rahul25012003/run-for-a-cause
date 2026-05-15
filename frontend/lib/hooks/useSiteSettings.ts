@@ -1,6 +1,11 @@
 /**
  * Server-side helpers for fetching public data on landing pages.
  * Each helper has a short ISR cache and a safe fallback.
+ *
+ * NOTE: AbortSignal.timeout() is silently ignored by Next.js 15's patched
+ * fetch (the cache layer decouples the signal from the real HTTP request).
+ * Use timedFetch() instead — it wraps Promise.race + setTimeout which is
+ * pure JS and cannot be bypassed by any fetch wrapper.
  */
 
 const apiUrl =
@@ -28,13 +33,26 @@ export interface FeedItem {
   timestamp: string;
 }
 
+/**
+ * Fetch with a hard wall-clock timeout that works regardless of how the
+ * underlying fetch is patched (Next.js cache, polyfills, etc.).
+ * Returns null on timeout or network error.
+ */
+export async function timedFetch(
+  url: string,
+  opts?: Parameters<typeof fetch>[1],
+  ms = 8000,
+): Promise<Response | null> {
+  const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), ms));
+  return Promise.race([fetch(url, opts).catch(() => null), timeout]);
+}
+
 export async function fetchPublicSettings(): Promise<Record<string, string>> {
+  const res = await timedFetch(`${apiUrl}/site-settings`, {
+    next: { revalidate: 30, tags: ["site-settings"] },
+  });
+  if (!res || !res.ok) return {};
   try {
-    const res = await fetch(`${apiUrl}/site-settings`, {
-      next: { revalidate: 30, tags: ["site-settings"] },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return {};
     return (await res.json()) as Record<string, string>;
   } catch {
     return {};
@@ -42,12 +60,11 @@ export async function fetchPublicSettings(): Promise<Record<string, string>> {
 }
 
 export async function fetchPublicStats(): Promise<PublicStats | null> {
+  const res = await timedFetch(`${apiUrl}/stats/public`, {
+    next: { revalidate: 30 },
+  });
+  if (!res || !res.ok) return null;
   try {
-    const res = await fetch(`${apiUrl}/stats/public`, {
-      next: { revalidate: 30 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return null;
     return (await res.json()) as PublicStats;
   } catch {
     return null;
@@ -55,12 +72,11 @@ export async function fetchPublicStats(): Promise<PublicStats | null> {
 }
 
 export async function fetchPublicFeed(): Promise<FeedItem[]> {
+  const res = await timedFetch(`${apiUrl}/audit-feed/public?limit=8`, {
+    next: { revalidate: 15 },
+  });
+  if (!res || !res.ok) return [];
   try {
-    const res = await fetch(`${apiUrl}/audit-feed/public?limit=8`, {
-      next: { revalidate: 15 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return [];
     return (await res.json()) as FeedItem[];
   } catch {
     return [];

@@ -6,7 +6,7 @@ import { PageHero } from "@/components/shared/PageHero";
 import { Reveal } from "@/components/shared/Reveal";
 import { Tilt3D } from "@/components/shared/Tilt3D";
 import { formatCompactInr } from "@/lib/utils";
-import { fetchPublicSettings } from "@/lib/hooks/useSiteSettings";
+import { fetchPublicSettings, timedFetch } from "@/lib/hooks/useSiteSettings";
 
 interface CausePublic {
   id: string;
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
 async function fetchCauses(): Promise<CausePublic[]> {
   const apiUrl =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+  const res = await timedFetch(`${apiUrl}/causes/`, { next: { revalidate: 60 } });
+  if (!res || !res.ok) return [];
   try {
-    const res = await fetch(`${apiUrl}/causes/`, { next: { revalidate: 60 } });
-    if (!res.ok) return [];
     return (await res.json()) as CausePublic[];
   } catch {
     return [];

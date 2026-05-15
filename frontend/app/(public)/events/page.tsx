@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { EventsBrowser } from "./EventsBrowser";
 import { PageHero } from "@/components/shared/PageHero";
-import { fetchPublicSettings } from "@/lib/hooks/useSiteSettings";
+import { fetchPublicSettings, timedFetch } from "@/lib/hooks/useSiteSettings";
 import type { EventPublic } from "@/types";
 
 export const metadata: Metadata = {
@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 async function fetchEvents(): Promise<EventPublic[]> {
   const apiUrl =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+  const res = await timedFetch(`${apiUrl}/events/?limit=50`, {
+    next: { revalidate: 60 },
+  });
+  if (!res || !res.ok) return [];
   try {
-    const res = await fetch(`${apiUrl}/events/?limit=50`, {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return [];
     return (await res.json()) as EventPublic[];
   } catch {
     return [];

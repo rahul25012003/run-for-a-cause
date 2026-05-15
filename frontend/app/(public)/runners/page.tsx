@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { Reveal } from "@/components/shared/Reveal";
 import { ProgressBar } from "@/components/shared/ProgressBar";
 import { formatCompactInr, formatDistance, progressPct } from "@/lib/utils";
+import { timedFetch } from "@/lib/hooks/useSiteSettings";
 
 export const metadata: Metadata = {
   title: "Runners",
@@ -29,11 +30,11 @@ interface RunnerSpotlightItem {
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
 
 async function fetchRunners(): Promise<RunnerSpotlightItem[]> {
+  const res = await timedFetch(`${apiUrl}/runners/spotlight?limit=200`, {
+    next: { revalidate: 30 },
+  });
+  if (!res || !res.ok) return [];
   try {
-    const res = await fetch(`${apiUrl}/runners/spotlight?limit=200`, {
-      next: { revalidate: 30 },
-    });
-    if (!res.ok) return [];
     return (await res.json()) as RunnerSpotlightItem[];
   } catch {
     return [];

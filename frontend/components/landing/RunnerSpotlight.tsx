@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/shared/Reveal";
 import { Tilt3D } from "@/components/shared/Tilt3D";
+import { timedFetch } from "@/lib/hooks/useSiteSettings";
 import { formatCompactInr, formatDistance } from "@/lib/utils";
 
 interface SpotlightItem {
@@ -77,12 +78,11 @@ const COVER_FALLBACKS = [
 async function fetchSpotlight(): Promise<SpotlightItem[]> {
   const apiUrl =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+  const res = await timedFetch(`${apiUrl}/runners/spotlight?limit=3`, {
+    next: { revalidate: 30 },
+  });
+  if (!res || !res.ok) return FALLBACK;
   try {
-    const res = await fetch(`${apiUrl}/runners/spotlight?limit=3`, {
-      next: { revalidate: 30 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return FALLBACK;
     const items = (await res.json()) as SpotlightItem[];
     return items.length > 0 ? items : FALLBACK;
   } catch {

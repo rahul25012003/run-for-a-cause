@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { timedFetch } from "@/lib/hooks/useSiteSettings";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://runforacause.in";
 const API_URL =
@@ -16,12 +17,11 @@ interface OrgRow {
 }
 
 async function fetchEvents(): Promise<EventRow[]> {
+  const res = await timedFetch(`${API_URL}/events/?limit=200`, {
+    next: { revalidate: 600 },
+  });
+  if (!res || !res.ok) return [];
   try {
-    const res = await fetch(`${API_URL}/events/?limit=200`, {
-      next: { revalidate: 600 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return [];
     return (await res.json()) as EventRow[];
   } catch {
     return [];
@@ -29,12 +29,11 @@ async function fetchEvents(): Promise<EventRow[]> {
 }
 
 async function fetchRunners(): Promise<SpotlightRow[]> {
+  const res = await timedFetch(`${API_URL}/runners/spotlight?limit=200`, {
+    next: { revalidate: 600 },
+  });
+  if (!res || !res.ok) return [];
   try {
-    const res = await fetch(`${API_URL}/runners/spotlight?limit=200`, {
-      next: { revalidate: 600 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return [];
     return (await res.json()) as SpotlightRow[];
   } catch {
     return [];
@@ -42,12 +41,12 @@ async function fetchRunners(): Promise<SpotlightRow[]> {
 }
 
 async function fetchOrgs(): Promise<OrgRow[]> {
+  const res = await timedFetch(
+    `${API_URL}/organisations/?verified_only=true`,
+    { next: { revalidate: 600 } },
+  );
+  if (!res || !res.ok) return [];
   try {
-    const res = await fetch(`${API_URL}/organisations/?verified_only=true`, {
-      next: { revalidate: 600 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return [];
     return (await res.json()) as OrgRow[];
   } catch {
     return [];
@@ -81,7 +80,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "daily",
     priority: 0.8,
   }));
-  // Each event also has a leaderboard sub-page.
   const leaderboardEntries: MetadataRoute.Sitemap = events.map((e) => ({
     url: `${SITE_URL}/events/${e.slug}/leaderboard`,
     lastModified: e.updated_at ? new Date(e.updated_at) : now,
