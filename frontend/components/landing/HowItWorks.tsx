@@ -62,7 +62,10 @@ export function HowItWorks({
   content?: Partial<HowItWorksContent>;
   steps?: HowItWorksStep[];
 }): React.ReactNode {
-  const c = { ...DEFAULTS, ...(content ?? {}) };
+  const overrides = Object.fromEntries(
+    Object.entries(content ?? {}).filter(([, v]) => v !== undefined && v !== ""),
+  ) as Partial<HowItWorksContent>;
+  const c = { ...DEFAULTS, ...overrides };
   const items = steps && steps.length > 0 ? steps : DEFAULT_STEPS;
   return (
     <section

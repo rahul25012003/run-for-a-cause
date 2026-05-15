@@ -59,7 +59,10 @@ export function TrustStrip({
   content?: Partial<TrustStripContent>;
   items?: TrustItem[];
 }): React.ReactNode {
-  const c = { ...DEFAULTS, ...(content ?? {}) };
+  const overrides = Object.fromEntries(
+    Object.entries(content ?? {}).filter(([, v]) => v !== undefined && v !== ""),
+  ) as Partial<TrustStripContent>;
+  const c = { ...DEFAULTS, ...overrides };
   const list = items && items.length > 0 ? items : DEFAULT_ITEMS;
   // Heading may have multiple lines; render with <br /> on the second part.
   const headingLines = c.heading.split("\n");

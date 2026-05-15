@@ -45,7 +45,10 @@ export function CtaBanner({
   stats?: CtaStats;
   valueProps?: string[];
 }): React.ReactNode {
-  const c = { ...DEFAULTS, ...(content ?? {}) };
+  const overrides = Object.fromEntries(
+    Object.entries(content ?? {}).filter(([, v]) => v !== undefined && v !== ""),
+  ) as Partial<CtaContent>;
+  const c = { ...DEFAULTS, ...overrides };
   const props =
     valueProps && valueProps.length > 0 ? valueProps : DEFAULT_VALUE_PROPS;
   const liveAmount = stats ? fmtInr(stats.raisedThisMonth) : "—";

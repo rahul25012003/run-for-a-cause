@@ -64,7 +64,12 @@ export function HeroSection({
   content?: Partial<HeroContent>;
   stats?: HeroStats;
 }): React.ReactNode {
-  const c = { ...DEFAULTS, ...(content ?? {}) };
+  // Strip undefined / empty-string values before merging so DEFAULTS are
+  // never silently overwritten when the CMS settings fail to load.
+  const overrides = Object.fromEntries(
+    Object.entries(content ?? {}).filter(([, v]) => v !== undefined && v !== ""),
+  ) as Partial<HeroContent>;
+  const c = { ...DEFAULTS, ...overrides };
   // Defensive fallbacks: an admin can clear an image/video URL via
   // /admin/content (saving "" to the setting). The empty string would
   // otherwise reach <Image src=""> and crash hydration. Always keep a

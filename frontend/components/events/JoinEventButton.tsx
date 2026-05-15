@@ -46,16 +46,8 @@ export function JoinEventButton({
       .catch(() => setMe(null));
   }, []);
 
-  useEffect(() => {
-    if (!me || me === "loading" || me.role !== "runner") return;
-    // Check if this runner has already joined
-    api
-      .get<{ id: string }[]>("/me/runner-events")
-      .then((events) => {
-        // me/runner-events doesn't include event_id directly, so we check after joining
-      })
-      .catch(() => undefined);
-  }, [me, eventId]);
+  // Note: checking already-joined status is handled by the 409 Conflict
+  // response from the backend on submit — no separate pre-check needed.
 
   useEffect(() => {
     if (open && storyRef.current) {
