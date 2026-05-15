@@ -10,12 +10,35 @@ import {
   ArrowRight,
   Phone,
   KeyRound,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import type { AuthResponse } from "@/types";
 
 type Tab = "email" | "phone";
+
+/** Retry a fetch once when the backend is cold-starting on Render free tier.
+ *  First failure → show "warming up" toast → wait 8s → retry. */
+async function withWarmupRetry<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    // Only retry on network errors (server sleeping), not auth errors
+    const isNetworkErr =
+      err instanceof TypeError ||
+      (err instanceof ApiError && err.status >= 500);
+    if (!isNetworkErr) throw err;
+
+    const id = toast.loading(
+      "Server is warming up — retrying in a moment…",
+    );
+    await new Promise((r) => setTimeout(r, 8000));
+    toast.dismiss(id);
+    return fn();
+  }
+}
 
 export default function LoginPage(): React.ReactNode {
   const router = useRouter();
@@ -24,6 +47,7 @@ export default function LoginPage(): React.ReactNode {
   // Email path
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Phone path
@@ -36,10 +60,9 @@ export default function LoginPage(): React.ReactNode {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await api.post<AuthResponse>("/auth/login", {
-        email,
-        password,
-      });
+      const res = await withWarmupRetry(() =>
+        api.post<AuthResponse>("/auth/login", { email, password }),
+      );
       toast.success(`Welcome back, ${res.user.full_name.split(" ")[0]}`);
       const dest =
         res.user.role === "super_admin" ? "/admin"
@@ -50,7 +73,7 @@ export default function LoginPage(): React.ReactNode {
       router.refresh();
     } catch (err) {
       toast.error(
-        err instanceof ApiError ? err.detail ?? err.message : "Login failed",
+        err instanceof ApiError ? err.detail ?? err.message : "Login failed. Please try again.",
       );
     } finally {
       setSubmitting(false);
@@ -61,7 +84,9 @@ export default function LoginPage(): React.ReactNode {
     e.preventDefault();
     setPhoneSubmitting(true);
     try {
-      await api.post("/auth/sms-otp/request", { phone });
+      await withWarmupRetry(() =>
+        api.post("/auth/sms-otp/request", { phone }),
+      );
       toast.success("If a matching account exists, an OTP was sent.");
       setOtpStage("code");
     } catch (err) {
@@ -77,10 +102,9 @@ export default function LoginPage(): React.ReactNode {
     e.preventDefault();
     setPhoneSubmitting(true);
     try {
-      const res = await api.post<AuthResponse>("/auth/sms-otp/verify", {
-        phone,
-        otp,
-      });
+      const res = await withWarmupRetry(() =>
+        api.post<AuthResponse>("/auth/sms-otp/verify", { phone, otp }),
+      );
       toast.success(`Welcome back, ${res.user.full_name.split(" ")[0]}`);
       const dest =
         res.user.role === "super_admin" ? "/admin"
@@ -148,18 +172,37 @@ export default function LoginPage(): React.ReactNode {
               placeholder="you@example.com"
             />
           </Field>
-          <Field label="Password" Icon={Lock}>
-            <input
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input pl-11"
-              autoComplete="current-password"
-              placeholder="••••••••"
-            />
-          </Field>
+
+          <label className="block">
+            <span className="label">Password</span>
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-400 pointer-events-none" />
+              <input
+                type={showPw ? "text" : "password"}
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input pl-11 pr-11"
+                autoComplete="current-password"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-ink-400 hover:text-ink-700 transition"
+                aria-label={showPw ? "Hide password" : "Show password"}
+                tabIndex={-1}
+              >
+                {showPw ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </label>
+
           <div className="flex items-center justify-between text-sm">
             <label className="inline-flex items-center gap-2 text-ink-600">
               <input

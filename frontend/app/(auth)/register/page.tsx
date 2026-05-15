@@ -3,11 +3,26 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Loader2, Footprints, Building2, ArrowRight } from "lucide-react";
+import { Loader2, Footprints, Building2, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { AuthResponse, UserRole } from "@/types";
+
+async function withWarmupRetry<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    const isNetworkErr =
+      err instanceof TypeError ||
+      (err instanceof ApiError && err.status >= 500);
+    if (!isNetworkErr) throw err;
+    const id = toast.loading("Server is warming up — retrying in a moment…");
+    await new Promise((r) => setTimeout(r, 8000));
+    toast.dismiss(id);
+    return fn();
+  }
+}
 
 export default function RegisterPage(): React.ReactNode {
   const router = useRouter();
@@ -21,19 +36,22 @@ export default function RegisterPage(): React.ReactNode {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await api.post<AuthResponse>("/auth/register", {
-        full_name: fullName,
-        email,
-        phone: phone || undefined,
-        password,
-        role,
-      });
+      const res = await withWarmupRetry(() =>
+        api.post<AuthResponse>("/auth/register", {
+          full_name: fullName,
+          email,
+          phone: phone || undefined,
+          password,
+          role,
+        }),
+      );
       // Auto-join event if launched from an event page
       if (res.user.role === "runner" && eventId) {
         try {
@@ -88,7 +106,12 @@ export default function RegisterPage(): React.ReactNode {
         <Input label="Full name" value={fullName} onChange={setFullName} required />
         <Input label="Email" type="email" value={email} onChange={setEmail} required placeholder="you@example.com" />
         <Input label="Phone" value={phone} onChange={setPhone} placeholder="+91 9000000000" />
-        <Input label="Password" type="password" value={password} onChange={setPassword} minLength={8} required help="At least 8 characters" />
+        <PasswordInput
+          value={password}
+          onChange={setPassword}
+          show={showPw}
+          onToggle={() => setShowPw((v) => !v)}
+        />
         <button type="submit" className="btn-primary w-full py-3.5" disabled={submitting}>
           {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Create account <ArrowRight className="w-4 h-4" /></>}
         </button>
@@ -166,6 +189,46 @@ function Input({
         className="input"
       />
       {help && <p className="mt-1.5 text-xs text-ink-400">{help}</p>}
+    </label>
+  );
+}
+
+function PasswordInput({
+  value,
+  onChange,
+  show,
+  onToggle,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  show: boolean;
+  onToggle: () => void;
+}): React.ReactNode {
+  return (
+    <label className="block">
+      <span className="label">Password <span className="text-danger-500">*</span></span>
+      <div className="relative">
+        <input
+          type={show ? "text" : "password"}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          required
+          minLength={8}
+          placeholder="••••••••"
+          className="input pr-11"
+          autoComplete="new-password"
+        />
+        <button
+          type="button"
+          onClick={onToggle}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-ink-400 hover:text-ink-700 transition"
+          aria-label={show ? "Hide password" : "Show password"}
+          tabIndex={-1}
+        >
+          {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+        </button>
+      </div>
+      <p className="mt-1.5 text-xs text-ink-400">At least 8 characters</p>
     </label>
   );
 }
