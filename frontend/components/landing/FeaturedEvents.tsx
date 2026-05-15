@@ -10,8 +10,10 @@ async function fetchFeatured(): Promise<EventPublic[]> {
   const apiUrl =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
   try {
-    const res = await fetch(`${apiUrl}/events/?limit=6`, {
+    // Use AbortSignal.timeout so a sleeping backend doesn't stall the build
+    const res = await fetch(`${apiUrl}/events?limit=6`, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return [];
     return (await res.json()) as EventPublic[];
@@ -57,11 +59,15 @@ export async function FeaturedEvents(): Promise<React.ReactNode> {
         </Reveal>
 
         {events.length === 0 ? (
-          <div className="card">
-            <EmptyState
-              title="No events yet"
-              description="Run the seed script to populate sample events for development."
-            />
+          <div className="card p-10 text-center">
+            <p className="text-ink-500 font-medium">Events are on their way.</p>
+            <p className="text-sm text-ink-400 mt-1">
+              Our server may be warming up — check back in a moment or{" "}
+              <Link href="/events" className="text-primary-600 hover:underline">
+                browse all events
+              </Link>
+              .
+            </p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -10,6 +10,7 @@ import { QueryProvider } from "@/components/shared/QueryProvider";
 import { ScrollProgress } from "@/components/shared/ScrollProgress";
 import { InstallPrompt } from "@/components/shared/InstallPrompt";
 import { ConsentBanner } from "@/components/shared/ConsentBanner";
+import { BackendKeepAlive } from "@/components/shared/BackendKeepAlive";
 import "./globals.css";
 
 const inter = Inter({
@@ -112,6 +113,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <QueryProvider>
+          <BackendKeepAlive />
           <ScrollProgress />
           {children}
           <InstallPrompt />

@@ -12,15 +12,17 @@ import type {
 const apiUrl =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
 
-async function fetchRunner(slug: string): Promise<RunnerProfilePublic | null> {
+async function fetchRunner(slug: string): Promise<RunnerProfilePublic | null | "unavailable"> {
   try {
     const res = await fetch(`${apiUrl}/runners/${slug}`, {
       next: { revalidate: 30 },
+      signal: AbortSignal.timeout(10000),
     });
-    if (!res.ok) return null;
+    if (res.status === 404) return null;
+    if (!res.ok) return "unavailable";
     return (await res.json()) as RunnerProfilePublic;
   } catch {
-    return null;
+    return "unavailable";
   }
 }
 
@@ -106,8 +108,31 @@ export default async function RunnerProfilePage({
   params: Promise<{ username: string }>;
 }): Promise<React.ReactNode> {
   const { username } = await params;
-  const runner = await fetchRunner(username);
-  if (!runner) notFound();
+  const runnerResult = await fetchRunner(username);
+  if (!runnerResult) notFound();
+  if (runnerResult === "unavailable") {
+    // Backend is cold-starting on Render free tier — show retry page
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center p-8">
+        <div className="text-center max-w-sm">
+          <p className="text-sm font-semibold text-primary-600 uppercase tracking-wide">
+            Hold on…
+          </p>
+          <h1 className="mt-3 font-display font-medium text-display-md text-ink-900">
+            Server is warming up
+          </h1>
+          <p className="mt-3 text-ink-500">
+            Our server is waking from sleep. Come back in 15–30 seconds and
+            the runner profile will be ready.
+          </p>
+          <Link href={`/runners/${username}`} className="btn-primary inline-flex mt-5">
+            Refresh now
+          </Link>
+        </div>
+      </div>
+    );
+  }
+  const runner = runnerResult;
 
   const event = await fetchEvent(runner.event_id);
   if (!event) notFound();

@@ -30,8 +30,9 @@ export interface FeedItem {
 
 export async function fetchPublicSettings(): Promise<Record<string, string>> {
   try {
-    const res = await fetch(`${apiUrl}/site-settings/`, {
+    const res = await fetch(`${apiUrl}/site-settings`, {
       next: { revalidate: 30, tags: ["site-settings"] },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return {};
     return (await res.json()) as Record<string, string>;
@@ -44,6 +45,7 @@ export async function fetchPublicStats(): Promise<PublicStats | null> {
   try {
     const res = await fetch(`${apiUrl}/stats/public`, {
       next: { revalidate: 30 },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return null;
     return (await res.json()) as PublicStats;
@@ -56,6 +58,7 @@ export async function fetchPublicFeed(): Promise<FeedItem[]> {
   try {
     const res = await fetch(`${apiUrl}/audit-feed/public?limit=8`, {
       next: { revalidate: 15 },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return [];
     return (await res.json()) as FeedItem[];
