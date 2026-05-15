@@ -80,6 +80,7 @@ async function fetchSpotlight(): Promise<SpotlightItem[]> {
   try {
     const res = await fetch(`${apiUrl}/runners/spotlight?limit=3`, {
       next: { revalidate: 30 },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return FALLBACK;
     const items = (await res.json()) as SpotlightItem[];

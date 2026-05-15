@@ -19,6 +19,7 @@ async function fetchEvents(): Promise<EventRow[]> {
   try {
     const res = await fetch(`${API_URL}/events/?limit=200`, {
       next: { revalidate: 600 },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return [];
     return (await res.json()) as EventRow[];
@@ -31,6 +32,7 @@ async function fetchRunners(): Promise<SpotlightRow[]> {
   try {
     const res = await fetch(`${API_URL}/runners/spotlight?limit=200`, {
       next: { revalidate: 600 },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return [];
     return (await res.json()) as SpotlightRow[];
@@ -43,6 +45,7 @@ async function fetchOrgs(): Promise<OrgRow[]> {
   try {
     const res = await fetch(`${API_URL}/organisations/?verified_only=true`, {
       next: { revalidate: 600 },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return [];
     return (await res.json()) as OrgRow[];
