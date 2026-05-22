@@ -1,9 +1,9 @@
 /**
- * Keep-alive proxy — the layout fetches this on every page load.
- * It pings the backend health endpoint server-side (so the backend
- * wakes from Render free-tier sleep before the user's first real
- * API call). Returns immediately; the backend wake-up continues
- * in the background if needed.
+ * Keep-alive proxy — the layout calls this on every page load.
+ * Waits up to 70s for the backend /health to respond so the caller
+ * knows the backend is genuinely warm (not just that the ping fired).
+ * Returns { ok: true, warm: true } on success, { ok: true, warm: false }
+ * on timeout/error.
  */
 import { NextResponse } from "next/server";
 
@@ -15,15 +15,15 @@ export const runtime = "nodejs";
 
 export async function GET(): Promise<NextResponse> {
   try {
-    // Fire-and-forget wake-up ping (5s timeout — enough for cold start to begin)
     const ac = new AbortController();
-    const timer = setTimeout(() => ac.abort(), 5000);
+    // 70s — covers the full Render free-tier cold-start window
+    const timer = setTimeout(() => ac.abort(), 70_000);
     await fetch(`${BACKEND.replace("/api/v1", "")}/health`, {
       signal: ac.signal,
       cache: "no-store",
     }).finally(() => clearTimeout(timer));
+    return NextResponse.json({ ok: true, warm: true });
   } catch {
-    // Ignore — if backend is sleeping the ping starts the wake-up process
+    return NextResponse.json({ ok: true, warm: false });
   }
-  return NextResponse.json({ ok: true });
 }

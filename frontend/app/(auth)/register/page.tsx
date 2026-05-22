@@ -10,27 +10,33 @@ import { cn } from "@/lib/utils";
 import type { AuthResponse, UserRole } from "@/types";
 
 async function withWarmupRetry<T>(fn: () => Promise<T>): Promise<T> {
-  const delays = [10_000, 20_000, 30_000];
-  let lastErr: unknown;
-  for (let i = 0; i <= delays.length; i++) {
+  const BUDGET_MS = 90_000;
+  const start = Date.now();
+  let toastId: string | number | undefined;
+
+  for (;;) {
     try {
+      if (toastId != null) toast.dismiss(toastId);
       return await fn();
     } catch (err) {
-      lastErr = err;
+      const elapsed = Date.now() - start;
       const isRetryable =
         err instanceof TypeError ||
         (err instanceof ApiError && err.status >= 500);
-      if (!isRetryable || i === delays.length) break;
-      const id = toast.loading(
-        i === 0
+      if (!isRetryable || elapsed >= BUDGET_MS) {
+        if (toastId != null) toast.dismiss(toastId);
+        throw err;
+      }
+      const remaining = Math.round((BUDGET_MS - elapsed) / 1000);
+      toastId = toast.loading(
+        elapsed < 15_000
           ? "Server is warming up — please wait…"
-          : "Still warming up, retrying…",
+          : `Still starting up… (${remaining}s left)`,
+        toastId != null ? { id: toastId } : undefined,
       );
-      await new Promise((r) => setTimeout(r, delays[i]));
-      toast.dismiss(id);
+      await new Promise((r) => setTimeout(r, elapsed < 20_000 ? 10_000 : 20_000));
     }
   }
-  throw lastErr;
 }
 
 export default function RegisterPage(): React.ReactNode {
