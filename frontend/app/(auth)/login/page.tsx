@@ -19,25 +19,31 @@ import type { AuthResponse } from "@/types";
 
 type Tab = "email" | "phone";
 
-/** Retry a fetch once when the backend is cold-starting on Render free tier.
- *  First failure → show "warming up" toast → wait 8s → retry. */
+/** Retry up to 3 times when the backend is cold-starting on Render free tier.
+ *  Each failure on a server/network error waits progressively longer before
+ *  the next attempt (10s → 20s → 30s). Auth errors (401/403) are not retried. */
 async function withWarmupRetry<T>(fn: () => Promise<T>): Promise<T> {
-  try {
-    return await fn();
-  } catch (err) {
-    // Only retry on network errors (server sleeping), not auth errors
-    const isNetworkErr =
-      err instanceof TypeError ||
-      (err instanceof ApiError && err.status >= 500);
-    if (!isNetworkErr) throw err;
-
-    const id = toast.loading(
-      "Server is warming up — retrying in a moment…",
-    );
-    await new Promise((r) => setTimeout(r, 8000));
-    toast.dismiss(id);
-    return fn();
+  const delays = [10_000, 20_000, 30_000];
+  let lastErr: unknown;
+  for (let i = 0; i <= delays.length; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const isRetryable =
+        err instanceof TypeError ||
+        (err instanceof ApiError && err.status >= 500);
+      if (!isRetryable || i === delays.length) break;
+      const id = toast.loading(
+        i === 0
+          ? "Server is warming up — please wait…"
+          : "Still warming up, retrying…",
+      );
+      await new Promise((r) => setTimeout(r, delays[i]));
+      toast.dismiss(id);
+    }
   }
+  throw lastErr;
 }
 
 export default function LoginPage(): React.ReactNode {

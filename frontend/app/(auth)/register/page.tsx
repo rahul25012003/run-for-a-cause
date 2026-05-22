@@ -10,18 +10,27 @@ import { cn } from "@/lib/utils";
 import type { AuthResponse, UserRole } from "@/types";
 
 async function withWarmupRetry<T>(fn: () => Promise<T>): Promise<T> {
-  try {
-    return await fn();
-  } catch (err) {
-    const isNetworkErr =
-      err instanceof TypeError ||
-      (err instanceof ApiError && err.status >= 500);
-    if (!isNetworkErr) throw err;
-    const id = toast.loading("Server is warming up — retrying in a moment…");
-    await new Promise((r) => setTimeout(r, 8000));
-    toast.dismiss(id);
-    return fn();
+  const delays = [10_000, 20_000, 30_000];
+  let lastErr: unknown;
+  for (let i = 0; i <= delays.length; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const isRetryable =
+        err instanceof TypeError ||
+        (err instanceof ApiError && err.status >= 500);
+      if (!isRetryable || i === delays.length) break;
+      const id = toast.loading(
+        i === 0
+          ? "Server is warming up — please wait…"
+          : "Still warming up, retrying…",
+      );
+      await new Promise((r) => setTimeout(r, delays[i]));
+      toast.dismiss(id);
+    }
   }
+  throw lastErr;
 }
 
 export default function RegisterPage(): React.ReactNode {
