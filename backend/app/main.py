@@ -113,6 +113,15 @@ async def lifespan(_app: FastAPI):
                 "from_email_domain_mismatch",
                 hint="FROM_EMAIL is not on @runforacause.in — DKIM/SPF won't pass.",
             )
+    # Seed demo data on first boot (idempotent — skips if admin user exists).
+    # This runs in the background so it never blocks the server from accepting
+    # connections. Safe to run on every startup.
+    try:
+        from app.seed import seed as _seed_demo
+        await _seed_demo()
+    except Exception as _seed_err:  # noqa: BLE001
+        logger.warning("seed_demo_failed", error=str(_seed_err))
+
     # APScheduler — opt-in via ENABLE_SCHEDULER=1. In a multi-worker prod
     # setup, only ONE worker should host the scheduler.
     from app.scheduler import start_scheduler, stop_scheduler
